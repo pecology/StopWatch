@@ -1,6 +1,17 @@
 
 #include "stdafx.h"
 
+//ウィンドウプロシージャ。ウィンドウクラスのlpfnWndProcにこの関数のポインタを入れておかないと、有効にならない。
+LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
+{
+  if (message == WM_LBUTTONUP)
+  {
+    MessageBox(hwnd, TEXT("終わります"), TEXT("終わり"), MB_ICONINFORMATION);
+    exit(0);
+  }
+  return DefWindowProc(hwnd, message, w_param, l_wapam);
+}
+
 int WINAPI WinMain(
   HINSTANCE hInstance,
   HINSTANCE hPrevInstance,
@@ -10,7 +21,7 @@ int WINAPI WinMain(
   //ウィンドウクラス作成
   WNDCLASS window_class;
   window_class.style = CS_HREDRAW | CS_VREDRAW;  //ウィンドウが拡大縮小されると再描画される。
-  window_class.lpfnWndProc = DefWindowProc;      //ウィンドウプロシージャを設定。
+  window_class.lpfnWndProc = MyWndProc;      //ウィンドウプロシージャを設定。
   window_class.cbClsExtra = 0;                   //ウィンドウクラスの追加領域をバイト単位で指定
   window_class.cbWndExtra = 0;                   //同じ
   window_class.hInstance = hInstance;             //インスタンスハンドル
@@ -58,11 +69,7 @@ int WINAPI WinMain(
       0,       // 受け取るメッセージの最小値。0は制限なし
       0        // 受け取るメッセージの最大値。0は制限なし。
     );
-
-    if (msg.message == WM_LBUTTONUP)
-    {
-      break;
-    }
+    //ディスパッチ後、上のウィンドウプロシージャが実行される。
     DispatchMessage(&msg);
   }
 
