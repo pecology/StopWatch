@@ -2,32 +2,53 @@
 #include "stdafx.h"
 
 int WINAPI WinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	PSTR lpCmdLine,
-	int nCmdShow) 
+  HINSTANCE hInstance,
+  HINSTANCE hPrevInstance,
+  PSTR lpCmdLine,
+  int nCmdShow) 
 {
-	HWND window_handle = CreateWindow(
-		TEXT("STATIC"),    //ウィンドウクラス
-		TEXT("ウィンドウだよ"), //ウィンドウ名
-		WS_CAPTION,       //ウィンドウのスタイル(CAPTIONは、タイトルバーを持つやつ)
-		500,              //初期位置(x軸)
-		100,              //初期位置(y軸)
-		100,              //ウィンドウの幅(x軸)
-		1000,              //ウィンドウの幅(y軸)
-		NULL,             //親ウィンドウのハンドル
-		NULL,             //メニューのハンドル
-		hInstance,         //インスタンスハンドル(メインの引数で受け取る、プログラムのハンドル)
-		NULL              //メッセージに渡されるパラメータ
-	);
+  //ウィンドウクラス作成
+  WNDCLASS window_class;
+  window_class.style = CS_HREDRAW | CS_VREDRAW;  //ウィンドウが拡大縮小されると再描画される。
+  window_class.lpfnWndProc = DefWindowProc;      //ウィンドウプロシージャを設定。
+  window_class.cbClsExtra = 0;                   //ウィンドウクラスの追加領域をバイト単位で指定
+  window_class.cbWndExtra = 0;                   //同じ
+  window_class.hInstance = hInstance;             //インスタンスハンドル
+  window_class.hIcon = LoadIcon(NULL, IDI_ERROR);  //アイコンの設定（下のバーに出るやつ）
+  window_class.hCursor = LoadCursor(NULL, IDC_HELP); //マウスカーソルのハンドルを指定
+                                                      //第一引数にNULLで第二引数に定数を入れることにより、
+                                                      //システムで定義されているカーソルを指定できる。IDC_ARROWは標準のやつ
+                                                      //矢印を十字にしたり砂時計にしたりできる。
+  window_class.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); //クライアントエリアの背景色を指定。
+  //ブラシのハンドルを渡す。すでにあるブラシのハンドルは、GetStockObjectで取得できる。
+  window_class.lpszMenuName = NULL;              //メニューを渡す。メニューはないのでNULL
+  window_class.lpszClassName = TEXT("ウィンドウクラス名です");  //ウィンドウクラスの名前を指定
 
-	if (window_handle == NULL)
-	{
-		return 0; //エラーチェック。ハンドルがNULLだったらエラーなので、プログラム終了。
-	}
+  //作成したウィンドウクラスを登録
+  ATOM atom = RegisterClass(&window_class);
+  if (atom == NULL)
+  {
+    return 0; //エラーチェック。atomがNULLだったらウィンドウクラス登録失敗なので、プログラム終了。
+  }
 
-	ShowWindow(window_handle, SW_SHOW);
-	MessageBox(NULL, TEXT("Kitty on your lap"),
-		TEXT("メッセージボックス"), MB_OK);
-	return 0;
+  HWND window_handle = CreateWindow(
+    TEXT("ウィンドウクラス名です"),  //ウィンドウクラス名。lpsxClssNameの文字列を指定
+    TEXT("ウィンドウだよ"),      //ウィンドウ名
+    WS_OVERLAPPED,               //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
+    100, 100, 200, 200,          //表示する座標と幅を指定
+    NULL, NULL,                    //親ウィンドウとメニューはないので、NULL
+    hInstance,                   //インスタンスハンドル
+    NULL                         //メッセージのパラメータ。ないのでNULL
+  );
+
+  if (window_handle == NULL)
+  {
+    return 0; //エラーチェック。window_handleがNULLだったらウィンドウクラス作成失敗なので、プログラム終了。
+  }
+
+  ShowWindow(window_handle, SW_SHOW);
+
+  MessageBox(NULL, TEXT("Kitty on your lap"),
+    TEXT("メッセージボックス"), MB_OK);
+  return 0;
 }
