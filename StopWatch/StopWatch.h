@@ -1,3 +1,8 @@
 #pragma once
+class StopWatch
+{
+public:
+	StopWatch();
+	~StopWatch();
+};
 
-#include "resource.h"
