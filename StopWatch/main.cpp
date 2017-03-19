@@ -4,10 +4,13 @@
 //ウィンドウプロシージャ。ウィンドウクラスのlpfnWndProcにこの関数のポインタを入れておかないと、有効にならない。
 LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
 {
-  if (message == WM_LBUTTONUP)
-  {
-    MessageBox(hwnd, TEXT("終わります"), TEXT("終わり"), MB_ICONINFORMATION);
-    exit(0);
+  if (message == WM_DESTROY)
+  { //ウィンドウ右上の×が押されたときに、WM_DESTROYがポストされるので、そのとき。
+    MessageBox(hwnd, TEXT("終わるにゃん"),
+      TEXT("Kitty"), MB_ICONINFORMATION);
+    PostQuitMessage(21);     //これが実行されると、メッセージキューにVM_QUITメッセージがポストされる。
+                            //引数の0は、VM_QUITメッセージのwPARAMの値になる。
+    return 0;
   }
   return DefWindowProc(hwnd, message, w_param, l_wapam);
 }
@@ -45,7 +48,7 @@ int WINAPI WinMain(
   HWND window_handle = CreateWindow(
     TEXT("ウィンドウクラス名です"),  //ウィンドウクラス名。lpsxClssNameの文字列を指定
     TEXT("ウィンドウだよ"),      //ウィンドウ名
-    WS_OVERLAPPED | WS_VISIBLE, //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
+    WS_OVERLAPPEDWINDOW | WS_VISIBLE, //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
     100, 100, 200, 200,          //表示する座標と幅を指定
     NULL, NULL,                    //親ウィンドウとメニューはないので、NULL
     hInstance,                   //インスタンスハンドル
@@ -58,17 +61,24 @@ int WINAPI WinMain(
   }
 
   MSG msg;
+  int result;
   while (TRUE)
   {
     //メッセージを受け取る
-    GetMessage(
+    result = GetMessage(
       &msg,    // 受け取ったメッセージを格納する変数のアドレス
-      window_handle,     // メッセージを受け取るウィンドウのハンドルを指定
+      NULL,     // メッセージを受け取るウィンドウのハンドルを指定
                // NULLを指定すると、アプリケーションを構成する
                // すべてのウィンドウのメッセージを取得する。)
       0,       // 受け取るメッセージの最小値。0は制限なし
       0        // 受け取るメッセージの最大値。0は制限なし。
     );
+    if (result == 0)
+    {
+      //GetMessageがWM_QUITを受け取ると戻り値が0になるので、そのとき。
+      //メイン関数に、wPARAMの値を戻して、プログラムを終了する。
+      return msg.wParam;
+    }
     //ディスパッチ後、上のウィンドウプロシージャが実行される。
     DispatchMessage(&msg);
   }
