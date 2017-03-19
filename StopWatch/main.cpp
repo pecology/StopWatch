@@ -4,6 +4,21 @@
 //ウィンドウプロシージャ。ウィンドウクラスのlpfnWndProcにこの関数のポインタを入れておかないと、有効にならない。
 LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
 {
+  if (message == WM_LBUTTONUP)
+  {
+    HDC device_context_handle;
+    LPCTSTR str = TEXT("こんにちは!!");
+    device_context_handle = GetDC(hwnd);
+    TextOut(
+      device_context_handle,      //デバイスコンテキストハンドル
+      10,                         //表示文字の位置x
+      10,                         //表示文字の位置y
+      str,                        //表示文字
+      lstrlen(str)                //表示文字の文字数
+    );
+    ReleaseDC(hwnd, device_context_handle);
+    return 0;
+  }
   if (message == WM_DESTROY)
   { //ウィンドウ右上の×が押されたときに、WM_DESTROYがポストされるので、そのとき。
     MessageBox(hwnd, TEXT("終わるにゃん"),
