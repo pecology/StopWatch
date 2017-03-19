@@ -34,7 +34,7 @@ int WINAPI WinMain(
   HWND window_handle = CreateWindow(
     TEXT("ウィンドウクラス名です"),  //ウィンドウクラス名。lpsxClssNameの文字列を指定
     TEXT("ウィンドウだよ"),      //ウィンドウ名
-    WS_OVERLAPPED,               //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
+    WS_OVERLAPPED | WS_VISIBLE, //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
     100, 100, 200, 200,          //表示する座標と幅を指定
     NULL, NULL,                    //親ウィンドウとメニューはないので、NULL
     hInstance,                   //インスタンスハンドル
@@ -46,9 +46,25 @@ int WINAPI WinMain(
     return 0; //エラーチェック。window_handleがNULLだったらウィンドウクラス作成失敗なので、プログラム終了。
   }
 
-  ShowWindow(window_handle, SW_SHOW);
+  MSG msg;
+  while (TRUE)
+  {
+    //メッセージを受け取る
+    GetMessage(
+      &msg,    // 受け取ったメッセージを格納する変数のアドレス
+      window_handle,     // メッセージを受け取るウィンドウのハンドルを指定
+               // NULLを指定すると、アプリケーションを構成する
+               // すべてのウィンドウのメッセージを取得する。)
+      0,       // 受け取るメッセージの最小値。0は制限なし
+      0        // 受け取るメッセージの最大値。0は制限なし。
+    );
 
-  MessageBox(NULL, TEXT("Kitty on your lap"),
-    TEXT("メッセージボックス"), MB_OK);
+    if (msg.message == WM_LBUTTONUP)
+    {
+      break;
+    }
+    DispatchMessage(&msg);
+  }
+
   return 0;
 }
