@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "main.h"
+#include "StopWatch.h"
 
 //ウィンドウハンドル
 HWND window_handle;
@@ -8,6 +9,8 @@ HWND window_handle;
 HINSTANCE instance_handle;
 //スレッド内のフラグ
 int flg = 1;
+//ストップウォッチクラス
+StopWatch stop_watch;
 
 //スレッド
 DWORD WINAPI MyThread(LPVOID *data)

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StopWatch", "StopWatchWindow\StopWatchWindow.vcxproj", "{16872F16-B66C-48E5-8DE8-471DA85D4A0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StopWatchWindow", "StopWatchWindow\StopWatchWindow.vcxproj", "{16872F16-B66C-48E5-8DE8-471DA85D4A0F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StopWatch", "StopWatch\StopWatch.vcxproj", "{C7FD682C-7B8C-42FE-8450-C9D92747352A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,14 @@ Global
 		{16872F16-B66C-48E5-8DE8-471DA85D4A0F}.Release|x64.Build.0 = Release|x64
 		{16872F16-B66C-48E5-8DE8-471DA85D4A0F}.Release|x86.ActiveCfg = Release|Win32
 		{16872F16-B66C-48E5-8DE8-471DA85D4A0F}.Release|x86.Build.0 = Release|Win32
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Debug|x64.ActiveCfg = Debug|x64
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Debug|x64.Build.0 = Debug|x64
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Debug|x86.ActiveCfg = Debug|Win32
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Debug|x86.Build.0 = Debug|Win32
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Release|x64.ActiveCfg = Release|x64
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Release|x64.Build.0 = Release|x64
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Release|x86.ActiveCfg = Release|Win32
+		{C7FD682C-7B8C-42FE-8450-C9D92747352A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
