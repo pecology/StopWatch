@@ -90,12 +90,12 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     }
     case RESET_BUTTON:
     {
-      MessageBox(hwnd, TEXT("リセットボタン"), TEXT("Kitty"), MB_OK);
+      stop_watch.Reset();
       break;
     }
     case RECORD_BUTTON:
     {
-      MessageBox(hwnd, TEXT("記録ボタン"), TEXT("Kitty"), MB_OK);
+      MessageBox(hwnd, TEXT("実装しましょう"), TEXT("Kitty"), MB_OK);
       break;
     }
     }
