@@ -35,13 +35,13 @@ public:
   int is_started;
 
 private:
+
+  milliseconds StopWatch::GetElapsedTimeDuration();
+
   //計測した記録
   milliseconds record;
 
   //計測開始時間
   time_point<system_clock> start_time;
-
-  //計測停止時間
-  time_point<system_clock> stop_time;
 };
 
