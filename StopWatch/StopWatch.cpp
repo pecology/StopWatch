@@ -6,6 +6,9 @@ using namespace std;
 
 StopWatch::StopWatch()
 {
+  start_time = time_point<system_clock>::min();
+  stop_time = time_point<system_clock>::min();
+  record = record.zero();
 }
 
 
@@ -22,10 +25,17 @@ void StopWatch::Start()
 
 void StopWatch::Stop()
 {
-  time_point<system_clock> stop_time = system_clock::now();
+  stop_time = system_clock::now();
   auto diff = stop_time - start_time;
-  record = duration_cast<milliseconds>(diff);
+  record = duration_cast<milliseconds>(diff + record);
   this->is_started = 0;
+}
+
+void StopWatch::Reset()
+{
+  is_started = 0;
+  record = record.zero();
+  start_time = time_point<system_clock>::min();
 }
 
 int StopWatch::GetRecord()
@@ -40,9 +50,9 @@ string StopWatch::GetRecordString()
 
 int StopWatch::GetElapsedTime()
 {
-  time_point<system_clock> stop_time = system_clock::now();
-  auto diff = stop_time - start_time;
-  milliseconds elapsedTime = duration_cast<milliseconds>(diff);
+  time_point<system_clock> now_time = system_clock::now();
+  auto diff = now_time - start_time;
+  milliseconds elapsedTime = duration_cast<milliseconds>(diff + record);
   return elapsedTime.count();
 }
 

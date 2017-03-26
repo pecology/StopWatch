@@ -19,6 +19,9 @@ public:
   //計測結果を1ミリ秒単位で取得する。
   int GetRecord();
 
+  //リセットする。
+  void Reset();
+
   //計測結果をミリ秒単位で取得する。
   string GetRecordString();
 
@@ -28,14 +31,17 @@ public:
   //経過時間をミリ秒単位で取得する。
   string GetElapsedTimeString();
 
+  //スタート状態：1, それ以外:0
+  int is_started;
+
 private:
   //計測した記録
   milliseconds record;
 
-  //スタート状態：1, それ以外:0
-  int is_started;
-
   //計測開始時間
   time_point<system_clock> start_time;
+
+  //計測停止時間
+  time_point<system_clock> stop_time;
 };
 

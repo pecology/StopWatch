@@ -2,6 +2,9 @@
 #include "stdafx.h"
 #include "main.h"
 #include "StopWatch.h"
+#include "stdlib.h"
+
+#pragma warning(disable : 4996)
 
 //ウィンドウハンドル
 HWND window_handle;
@@ -16,13 +19,23 @@ StopWatch stop_watch;
 DWORD WINAPI MyThread(LPVOID *data)
 {
   int count = 0;
-  TCHAR buf[1000] = TEXT("");
+  string disp_time;
   PAINTSTRUCT paint_struct;
   HFONT font_handle;
   while (flg)
   {
     InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
-    wsprintf(buf, TEXT("%d"), count);
+    //wsprintf(buf, TEXT("%d"), count);
+    if (stop_watch.is_started)
+    {
+      disp_time = stop_watch.GetElapsedTimeString();
+    }
+    else
+    {
+      disp_time = stop_watch.GetRecordString();
+    }
+    LPTSTR buf[100];
+    mbstowcs((wchar_t *)buf, disp_time.c_str(), disp_time.length());
     HDC device_context_handle;
     device_context_handle = BeginPaint(window_handle, &paint_struct);
     font_handle = CreateFont(
@@ -36,14 +49,14 @@ DWORD WINAPI MyThread(LPVOID *data)
       device_context_handle,      //デバイスコンテキストハンドル
       10,                         //表示文字の位置x
       20,                         //表示文字の位置y
-      buf,                        //表示文字
-      lstrlen(buf)                //表示文字の文字数
+      (LPCWSTR)buf,                        //表示文字
+      disp_time.length()                //表示文字の文字数
     );
     SelectObject(device_context_handle, GetStockObject(SYSTEM_FONT));
     DeleteObject(font_handle);
     EndPaint(window_handle, &paint_struct);
     count++;
-    Sleep(100);
+    Sleep(200);
   }
   ExitThread(0);
 }
@@ -65,7 +78,14 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     {
     case START_STOP_BUTTON:
     {
-      MessageBox(hwnd, TEXT("スタート/ストップボタン"), TEXT("Kitty"), MB_OK);
+      if (stop_watch.is_started)
+      {
+        stop_watch.Stop();
+      }
+      else 
+      {
+        stop_watch.Start();
+      }
       break;
     }
     case RESET_BUTTON:
