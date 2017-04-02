@@ -18,7 +18,7 @@ StopWatch stop_watch;
 LPTSTR display_time[100];
 
 //スレッド
-DWORD WINAPI MyThread()
+DWORD WINAPI PaintElapsedTime()
 {
   int count = 0;
   string disp_time;
@@ -255,7 +255,7 @@ void OnStartStop()
   { // スタート
     //スレッドを作成する。
     thread_end_flg = 0;
-    CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MyThread, NULL, 0, NULL);
+    CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PaintElapsedTime, NULL, 0, NULL);
 
     //計測開始
     stop_watch.Start();
