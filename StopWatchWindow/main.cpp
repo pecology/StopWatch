@@ -77,6 +77,9 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     }
     case RESET_BUTTON:
     {
+      //スレッドを終了させる。
+      thread_end_flg = 1;
+
       stop_watch.Reset();
       display_time[0] = (LPTSTR)TEXT('0');
       display_time[1] = (LPTSTR)TEXT('\0');
