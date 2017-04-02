@@ -57,8 +57,12 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
   case WM_CHAR:
   {
     if (w_param == TEXT('s'))
-    {
+    { // スタート/ストップする。
       OnStartStop();
+    }
+    else if (w_param == TEXT('r'))
+    { //リセットする
+      //OnReset()
     }
     break;
   }
