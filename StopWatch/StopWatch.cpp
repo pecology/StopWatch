@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "StopWatch.h"
 
 using namespace std::chrono;
@@ -8,11 +7,13 @@ StopWatch::StopWatch()
 {
   start_time = time_point<system_clock>::min();
   record = record.zero();
+  record_time_display_format = new wchar_t[15];
 }
 
 
 StopWatch::~StopWatch()
 {
+  delete[] record_time_display_format;
 }
 
 
@@ -51,6 +52,34 @@ int StopWatch::GetElapsedTime()
   return elapsedTime.count();
 }
 
+wchar_t *StopWatch::GetElapsedTimeDisplay()
+{
+  int elapsedTime = GetElapsedTime();
+  SetRecordTimeDisplayFormat(elapsedTime);
+  return record_time_display_format;
+}
+
+void StopWatch::SetRecordTimeDisplayFormat(int time)
+{
+  int num[10];
+  for (int i = 1; i < 10; i++)
+  {
+    num[i] = ExtractDigit(time, i);
+  }
+
+  swprintf_s(record_time_display_format, 100,
+               L"%d%d:%d%d:%d%d:%d%d%d", num[9],
+    num[8], num[7], num[6], num[5], num[4], num[3], num[2], num[1]);
+}
+
+int StopWatch::ExtractDigit(int number, int digit)
+{
+  int divisor = pow(10, digit);
+  int return_num = (number % divisor) / (divisor / 10);
+  return return_num;
+}
+
+
 milliseconds StopWatch::GetElapsedTimeDuration()
 {
   time_point<system_clock> now_time = system_clock::now();
@@ -64,4 +93,3 @@ string StopWatch::GetElapsedTimeString()
   int elapsed_time = GetElapsedTime();
   return to_string(elapsed_time);
 }
-

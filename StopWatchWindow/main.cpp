@@ -15,7 +15,7 @@ int thread_end_flg = 0;
 //ストップウォッチクラス
 StopWatch stop_watch;
 //表示タイム
-LPTSTR display_time[100];
+LPCWSTR display_time;
 
 //スレッド
 DWORD WINAPI PaintElapsedTime()
@@ -25,16 +25,14 @@ DWORD WINAPI PaintElapsedTime()
   PAINTSTRUCT paint_struct;
   HFONT font_handle;
   static RECT rect;
-  SetRect(&rect, 10, 20, 200, 100);
+  SetRect(&rect, 10, 20, 250, 100);
   while (!thread_end_flg)
   {
-    disp_time = stop_watch.GetElapsedTimeString();
-
-    mbstowcs((wchar_t *)display_time, disp_time.c_str(), disp_time.length());
+    display_time = (LPCWSTR)stop_watch.GetElapsedTimeDisplay();
 
     InvalidateRect(window_handle, &rect, TRUE);  //領域無効化
 
-    Sleep(100);
+    Sleep(90);
   }
   ExitThread(0);
 }
@@ -177,7 +175,7 @@ int WINAPI WinMain(
     TEXT("BUTTON"),         //ウィンドウクラス名。用意されているボタンを使う。
     TEXT("スタート/ストップ"),       //ウィンドウ名
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, //子にするため、WS_CHILD。BS_PUSHBUTTON
-    220, 10, 150, 40,
+    250, 10, 120, 40,
     window_handle,           //親ウィンドウのハンドル指定
     (HMENU)START_STOP_BUTTON,        //メニューではなく、ボタンウィンドウのIDを決める。
     hInstance,              //インスタンスハンドル
@@ -188,7 +186,7 @@ int WINAPI WinMain(
     TEXT("BUTTON"),         //ウィンドウクラス名。用意されているボタンを使う。
     TEXT("リセット"),       //ウィンドウ名
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, //子にするため、WS_CHILD。BS_PUSHBUTTON
-    220, 60, 70, 30,
+    250, 60, 40, 30,
     window_handle,           //親ウィンドウのハンドル指定
     (HMENU)RESET_BUTTON,      //メニューではなく、ボタンウィンドウのIDを決める。
     hInstance,              //インスタンスハンドル
@@ -265,7 +263,7 @@ void OnReset()
   thread_end_flg = 1;
 
   stop_watch.Reset();
-  display_time[0] = (LPTSTR)TEXT('0');
-  display_time[1] = (LPTSTR)TEXT('\0');
+  //display_time[0] = TEXT('0');
+  //display_time[1] = TEXT('\0');
   InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
 }
