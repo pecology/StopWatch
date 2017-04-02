@@ -11,3 +11,5 @@ constexpr static int RECORD_BUTTON = 3;
 
 void OnStartStop();
 
+void OnReset();
+

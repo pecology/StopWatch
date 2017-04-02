@@ -62,7 +62,7 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     }
     else if (w_param == TEXT('r'))
     { //リセットする
-      //OnReset()
+      OnReset();
     }
     break;
   }
@@ -77,13 +77,7 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     }
     case RESET_BUTTON:
     {
-      //スレッドを終了させる。
-      thread_end_flg = 1;
-
-      stop_watch.Reset();
-      display_time[0] = (LPTSTR)TEXT('0');
-      display_time[1] = (LPTSTR)TEXT('\0');
-      InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
+      OnReset();
       break;
     }
     case RECORD_BUTTON:
@@ -263,4 +257,15 @@ void OnStartStop()
     //計測開始
     stop_watch.Start();
   }
+}
+
+void OnReset()
+{
+  //スレッドを終了させる。
+  thread_end_flg = 1;
+
+  stop_watch.Reset();
+  display_time[0] = (LPTSTR)TEXT('0');
+  display_time[1] = (LPTSTR)TEXT('\0');
+  InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
 }
