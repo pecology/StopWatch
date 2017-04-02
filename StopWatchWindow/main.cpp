@@ -7,7 +7,7 @@
 #pragma warning(disable : 4996)
 
 //ウィンドウハンドル
-HWND window_handle;
+HWND main_window_handle;
 //インスタンスハンドル
 HINSTANCE instance_handle;
 //スレッド終了フラグ
@@ -20,6 +20,8 @@ LPCWSTR display_time;
 RECT elapsed_time_rect;
 //経過時間のフォント
 HFONT font_handle;
+//元々のボタンのウィンドウプロシージャハンドル
+WNDPROC default_button_window_proc_handle;
 
 //経過時間を描画するスレッド。計測中に常に動いている。
 DWORD WINAPI PaintElapsedTime()
@@ -28,13 +30,24 @@ DWORD WINAPI PaintElapsedTime()
   {
     display_time = (LPCWSTR)stop_watch.GetElapsedTimeDisplay();
 
-    InvalidateRect(window_handle, &elapsed_time_rect, TRUE);  //領域無効化
+    InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //領域無効化
 
     Sleep(90);
   }
   ExitThread(0);
 }
 
+//ボタンの拡張プロシージャ。ボタンに対して送られたWM_CHAR(キー入力)をメインウィンドウに送る
+LRESULT CALLBACK CustomButtonProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
+{
+  if (message == WM_CHAR)
+  {
+    // メインウィンドウプロシージャに送る。
+    SendMessage(main_window_handle, message, w_param, l_wapam);
+  }
+  //　もともとのプロシージャにも送る。
+  return CallWindowProc(default_button_window_proc_handle, hwnd, message, w_param, l_wapam);
+}
 
 //メインウィンドウのプロシージャ。ウィンドウクラスのlpfnWndProcにこの関数のポインタを入れておかないと、有効にならない。
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
@@ -87,7 +100,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_w
 
   case WM_PAINT:
   {
-    device_context_handle = BeginPaint(window_handle, &paint_struct);
+    device_context_handle = BeginPaint(main_window_handle, &paint_struct);
     SelectObject(device_context_handle, font_handle);
     TextOut(
       device_context_handle,      //デバイスコンテキストハンドル
@@ -97,7 +110,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_w
       lstrlen((LPCWSTR)display_time)                //表示文字の文字数
     );
     //SelectObject(device_context_handle, GetStockObject(SYSTEM_FONT));
-    EndPaint(window_handle, &paint_struct);
+    EndPaint(main_window_handle, &paint_struct);
 
     break;
   }
@@ -151,7 +164,7 @@ int WINAPI WinMain(
     return 0; //エラーチェック。atomがNULLだったらウィンドウクラス登録失敗なので、プログラム終了。
   }
 
-  window_handle = CreateWindow(
+  main_window_handle = CreateWindow(
     TEXT("ウィンドウクラス名です"),  //ウィンドウクラス名。lpsxClssNameの文字列を指定
     TEXT("ウィンドウだよ"),      //ウィンドウ名
     WS_OVERLAPPEDWINDOW | WS_VISIBLE, //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
@@ -161,7 +174,7 @@ int WINAPI WinMain(
     NULL                         //メッセージのパラメータ。ないのでNULL
   );
 
-  if (window_handle == NULL)
+  if (main_window_handle == NULL)
   {
     return 0; //エラーチェック。window_handleがNULLだったらウィンドウクラス作成失敗なので、プログラム終了。
   }
@@ -171,7 +184,7 @@ int WINAPI WinMain(
     TEXT("スタート/ストップ"),       //ウィンドウ名
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, //子にするため、WS_CHILD。BS_PUSHBUTTON
     250, 10, 120, 40,
-    window_handle,           //親ウィンドウのハンドル指定
+    main_window_handle,           //親ウィンドウのハンドル指定
     (HMENU)START_STOP_BUTTON,        //メニューではなく、ボタンウィンドウのIDを決める。
     hInstance,              //インスタンスハンドル
     NULL                    //メニュー(なし)
@@ -182,7 +195,7 @@ int WINAPI WinMain(
     TEXT("リセット"),       //ウィンドウ名
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, //子にするため、WS_CHILD。BS_PUSHBUTTON
     250, 60, 40, 30,
-    window_handle,           //親ウィンドウのハンドル指定
+    main_window_handle,           //親ウィンドウのハンドル指定
     (HMENU)RESET_BUTTON,      //メニューではなく、ボタンウィンドウのIDを決める。
     hInstance,              //インスタンスハンドル
     NULL                    //メニュー(なし)
@@ -193,11 +206,19 @@ int WINAPI WinMain(
     TEXT("記録"),       //ウィンドウ名
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, //子にするため、WS_CHILD。BS_PUSHBUTTON
     300, 60, 70, 30,
-    window_handle,           //親ウィンドウのハンドル指定
+    main_window_handle,           //親ウィンドウのハンドル指定
     (HMENU)RECORD_BUTTON,           //メニューではなく、ボタンウィンドウのIDを決める。
     hInstance,              //インスタンスハンドル
     NULL                    //メニュー(なし)
   );
+
+  // ボタンのウィンドウプロシージャを取得
+  default_button_window_proc_handle = (WNDPROC)GetWindowLong(start_button_handle, GWL_WNDPROC);
+  
+  // ボタンのウィンドウプロシージャを差し替える。
+  SetWindowLong(start_button_handle, GWL_WNDPROC, (long)CustomButtonProc);
+  SetWindowLong(reset_button_handle, GWL_WNDPROC, (long)CustomButtonProc);
+  SetWindowLong(record_button_handle, GWL_WNDPROC, (long)CustomButtonProc);
 
   MSG msg;
   int result;
@@ -260,5 +281,5 @@ void OnReset()
   stop_watch.Reset();
   //display_time[0] = TEXT('0');
   //display_time[1] = TEXT('\0');
-  InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
+  InvalidateRect(main_window_handle, NULL, TRUE);  //領域無効化
 }
