@@ -9,3 +9,5 @@ constexpr static int RESET_BUTTON = 2;
 //記録ボタンのウィンドウid
 constexpr static int RECORD_BUTTON = 3;
 
+void OnStartStop();
+

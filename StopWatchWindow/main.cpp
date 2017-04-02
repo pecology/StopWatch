@@ -10,53 +10,31 @@
 HWND window_handle;
 //インスタンスハンドル
 HINSTANCE instance_handle;
-//スレッド内のフラグ
-int flg = 1;
+//スレッド終了フラグ
+int thread_end_flg = 0;
 //ストップウォッチクラス
 StopWatch stop_watch;
+//表示タイム
+LPTSTR display_time[100];
 
 //スレッド
-DWORD WINAPI MyThread(LPVOID *data)
+DWORD WINAPI MyThread()
 {
   int count = 0;
   string disp_time;
   PAINTSTRUCT paint_struct;
   HFONT font_handle;
-  while (flg)
+  static RECT rect;
+  SetRect(&rect, 10, 20, 200, 100);
+  while (!thread_end_flg)
   {
-    InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
-    //wsprintf(buf, TEXT("%d"), count);
-    if (stop_watch.is_started)
-    {
-      disp_time = stop_watch.GetElapsedTimeString();
-    }
-    else
-    {
-      disp_time = stop_watch.GetRecordString();
-    }
-    LPTSTR buf[100];
-    mbstowcs((wchar_t *)buf, disp_time.c_str(), disp_time.length());
-    HDC device_context_handle;
-    device_context_handle = BeginPaint(window_handle, &paint_struct);
-    font_handle = CreateFont(
-      60, 20, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-      DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-      CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-      VARIABLE_PITCH | FF_ROMAN, NULL
-    );
-    SelectObject(device_context_handle, font_handle);
-    TextOut(
-      device_context_handle,      //デバイスコンテキストハンドル
-      10,                         //表示文字の位置x
-      20,                         //表示文字の位置y
-      (LPCWSTR)buf,                        //表示文字
-      disp_time.length()                //表示文字の文字数
-    );
-    SelectObject(device_context_handle, GetStockObject(SYSTEM_FONT));
-    DeleteObject(font_handle);
-    EndPaint(window_handle, &paint_struct);
-    count++;
-    Sleep(200);
+    disp_time = stop_watch.GetElapsedTimeString();
+
+    mbstowcs((wchar_t *)display_time, disp_time.c_str(), disp_time.length());
+
+    InvalidateRect(window_handle, &rect, TRUE);  //領域無効化
+
+    Sleep(100);
   }
   ExitThread(0);
 }
@@ -66,11 +44,23 @@ DWORD WINAPI MyThread(LPVOID *data)
 LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
 {
   static HANDLE thread;
+  static PAINTSTRUCT paint_struct;
+  static HFONT font_handle = CreateFont(
+    60, 20, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+    DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+    VARIABLE_PITCH | FF_ROMAN, NULL
+  );
+  static HDC device_context_handle;
   switch (message)
   {
-  case WM_CREATE:
+  case WM_CHAR:
   {
-    thread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MyThread, (LPVOID)TEXT("カウント:"), 0, NULL);
+    if (w_param == TEXT('s'))
+    {
+      OnStartStop();
+    }
+    break;
   }
   case WM_COMMAND:
   {
@@ -78,19 +68,15 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     {
     case START_STOP_BUTTON:
     {
-      if (stop_watch.is_started)
-      {
-        stop_watch.Stop();
-      }
-      else 
-      {
-        stop_watch.Start();
-      }
+      OnStartStop();
       break;
     }
     case RESET_BUTTON:
     {
       stop_watch.Reset();
+      display_time[0] = (LPTSTR)TEXT('0');
+      display_time[1] = (LPTSTR)TEXT('\0');
+      InvalidateRect(window_handle, NULL, TRUE);  //領域無効化
       break;
     }
     case RECORD_BUTTON:
@@ -102,30 +88,35 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
     return 0;
   }
 
-  case WM_LBUTTONUP:
-  {
-    thread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MyThread, (LPVOID)TEXT("カウント:"), 0, NULL);
-    HDC device_context_handle;
-    LPCTSTR str = TEXT("こんにちは!!");
-    device_context_handle = GetDC(hwnd);
-    TextOut(
-      device_context_handle,      //デバイスコンテキストハンドル
-      10,                         //表示文字の位置x
-      10,                         //表示文字の位置y
-      str,                        //表示文字
-      lstrlen(str)                //表示文字の文字数
-    );
-    ReleaseDC(hwnd, device_context_handle);
-    return 0;
-  }
-
   case WM_DESTROY:
   {
-    MessageBox(hwnd, TEXT("終わるにゃん"),
-      TEXT("Kitty"), MB_ICONINFORMATION);
     PostQuitMessage(21);     //これが実行されると、メッセージキューにVM_QUITメッセージがポストされる。
                              //引数の0は、VM_QUITメッセージのwPARAMの値になる。
     return 0;
+  }
+
+  case WM_PAINT:
+  {
+    font_handle = CreateFont(
+      60, 20, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+      DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+      VARIABLE_PITCH | FF_ROMAN, NULL
+    );
+    device_context_handle = BeginPaint(window_handle, &paint_struct);
+    SelectObject(device_context_handle, font_handle);
+    TextOut(
+      device_context_handle,      //デバイスコンテキストハンドル
+      10,                         //表示文字の位置x
+      20,                         //表示文字の位置y
+      (LPCWSTR)display_time,                        //表示文字
+      lstrlen((LPCWSTR)display_time)                //表示文字の文字数
+    );
+    //SelectObject(device_context_handle, GetStockObject(SYSTEM_FONT));
+    DeleteObject(font_handle);
+    EndPaint(window_handle, &paint_struct);
+
+    break;
   }
 
   default:
@@ -233,9 +224,36 @@ int WINAPI WinMain(
       //メイン関数に、wPARAMの値を戻して、プログラムを終了する。
       return msg.wParam;
     }
+    if (msg.message == WM_KEYDOWN)
+    {
+      int a = 1;
+    }
+    //仮想キーコードを実際の文字に変換
+    TranslateMessage(&msg);
     //ディスパッチ後、上のウィンドウプロシージャが実行される。
     DispatchMessage(&msg);
   }
 
   return 0;
+}
+
+void OnStartStop() 
+{
+  if(stop_watch.is_started)
+  { // ストップ
+    //スレッドを終了させる。
+    thread_end_flg = 1;
+
+    //計測終了
+    stop_watch.Stop();
+  }
+  else
+  { // スタート
+    //スレッドを作成する。
+    thread_end_flg = 0;
+    CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MyThread, NULL, 0, NULL);
+
+    //計測開始
+    stop_watch.Start();
+  }
 }
