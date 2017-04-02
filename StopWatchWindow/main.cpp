@@ -16,21 +16,19 @@ int thread_end_flg = 0;
 StopWatch stop_watch;
 //表示タイム
 LPCWSTR display_time;
+//経過時間再描画の範囲
+RECT elapsed_time_rect;
+//経過時間のフォント
+HFONT font_handle;
 
-//スレッド
+//経過時間を描画するスレッド。計測中に常に動いている。
 DWORD WINAPI PaintElapsedTime()
 {
-  int count = 0;
-  string disp_time;
-  PAINTSTRUCT paint_struct;
-  HFONT font_handle;
-  static RECT rect;
-  SetRect(&rect, 10, 20, 250, 100);
   while (!thread_end_flg)
   {
     display_time = (LPCWSTR)stop_watch.GetElapsedTimeDisplay();
 
-    InvalidateRect(window_handle, &rect, TRUE);  //領域無効化
+    InvalidateRect(window_handle, &elapsed_time_rect, TRUE);  //領域無効化
 
     Sleep(90);
   }
@@ -38,17 +36,10 @@ DWORD WINAPI PaintElapsedTime()
 }
 
 
-//ウィンドウプロシージャ。ウィンドウクラスのlpfnWndProcにこの関数のポインタを入れておかないと、有効にならない。
-LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
+//メインウィンドウのプロシージャ。ウィンドウクラスのlpfnWndProcにこの関数のポインタを入れておかないと、有効にならない。
+LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wapam)
 {
-  static HANDLE thread;
-  static PAINTSTRUCT paint_struct;
-  static HFONT font_handle = CreateFont(
-    60, 20, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-    DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-    VARIABLE_PITCH | FF_ROMAN, NULL
-  );
+  static PAINTSTRUCT paint_struct; 
   static HDC device_context_handle;
   switch (message)
   {
@@ -96,12 +87,6 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
 
   case WM_PAINT:
   {
-    font_handle = CreateFont(
-      60, 20, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-      DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-      CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-      VARIABLE_PITCH | FF_ROMAN, NULL
-    );
     device_context_handle = BeginPaint(window_handle, &paint_struct);
     SelectObject(device_context_handle, font_handle);
     TextOut(
@@ -112,7 +97,6 @@ LRESULT CALLBACK MyWndProc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_wap
       lstrlen((LPCWSTR)display_time)                //表示文字の文字数
     );
     //SelectObject(device_context_handle, GetStockObject(SYSTEM_FONT));
-    DeleteObject(font_handle);
     EndPaint(window_handle, &paint_struct);
 
     break;
@@ -132,10 +116,21 @@ int WINAPI WinMain(
 {
   instance_handle = hInstance;
 
+  //経過時間描画の範囲を指定する。
+  SetRect(&elapsed_time_rect, 10, 20, 250, 100);
+
+  //経過時間のフォントを指定する。
+  font_handle = CreateFont(
+    60, 20, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+    DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+    VARIABLE_PITCH | FF_ROMAN, NULL
+  );
+
   //ウィンドウクラス作成
   WNDCLASS window_class;
   window_class.style = CS_HREDRAW | CS_VREDRAW;  //ウィンドウが拡大縮小されると再描画される。
-  window_class.lpfnWndProc = MyWndProc;      //ウィンドウプロシージャを設定。
+  window_class.lpfnWndProc = MainWndProc;      //ウィンドウプロシージャを設定。
   window_class.cbClsExtra = 0;                   //ウィンドウクラスの追加領域をバイト単位で指定
   window_class.cbWndExtra = 0;                   //同じ
   window_class.hInstance = hInstance;             //インスタンスハンドル
