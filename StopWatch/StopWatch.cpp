@@ -7,7 +7,8 @@ StopWatch::StopWatch()
 {
   start_time = time_point<system_clock>::min();
   record = record.zero();
-  record_time_display_format = new wchar_t[15];
+  //TODO 後で適切な配列数にしろ
+  record_time_display_format = new wchar_t[100];
 }
 
 
@@ -61,15 +62,18 @@ wchar_t *StopWatch::GetElapsedTimeDisplay()
 
 void StopWatch::SetRecordTimeDisplayFormat(int time)
 {
-  int num[10];
+  //時間のi桁目をi番目に入れる。
+  int time_number[10];
   for (int i = 1; i < 10; i++)
   {
-    num[i] = ExtractDigit(time, i);
+    time_number[i] = ExtractDigit(time, i);
   }
 
-  swprintf_s(record_time_display_format, 100,
-               L"%d%d:%d%d:%d%d:%d%d%d", num[9],
-    num[8], num[7], num[6], num[5], num[4], num[3], num[2], num[1]);
+  //整形してセット
+  swprintf_s(record_time_display_format, sizeof(wchar_t[13]),
+               L"%d%d:%d%d:%d%d:%d%d%d", time_number[9],
+    time_number[8], time_number[7], time_number[6], time_number[5],
+    time_number[4], time_number[3], time_number[2], time_number[1]);
 }
 
 int StopWatch::ExtractDigit(int number, int digit)
