@@ -1,11 +1,10 @@
 #include "StopWatch.h"
 
-using namespace std::chrono;
 using namespace std;
 
 StopWatch::StopWatch()
 {
-  start_time = time_point<system_clock>::min();
+  start_time = chrono::time_point<chrono::system_clock>::min();
   record = record.zero();
 }
 
@@ -18,7 +17,7 @@ StopWatch::~StopWatch()
 void StopWatch::Start()
 {
   this->is_started = 1;
-  this->start_time = system_clock::now();
+  this->start_time = chrono::system_clock::now();
 }
 
 void StopWatch::Stop()
@@ -31,7 +30,7 @@ void StopWatch::Reset()
 {
   is_started = 0;
   record = record.zero();
-  start_time = time_point<system_clock>::min();
+  start_time = chrono::time_point<chrono::system_clock>::min();
 }
 
 int StopWatch::GetRecord()
@@ -75,7 +74,7 @@ void StopWatch::SetRecordTimeDisplayFormat(int time)
 
 int StopWatch::ExtractDigit(int number, int digit)
 {
-  int divisor = pow(10, digit);
+  int divisor = (int)pow(10, digit);
   int return_num = (number % divisor) / (divisor / 10);
   return return_num;
 }
@@ -83,9 +82,9 @@ int StopWatch::ExtractDigit(int number, int digit)
 
 milliseconds StopWatch::GetElapsedTimeDuration()
 {
-  time_point<system_clock> now_time = system_clock::now();
+  chrono::time_point<chrono::system_clock> now_time = chrono::system_clock::now();
   auto diff = now_time - start_time;
-  milliseconds elapsedTime = duration_cast<milliseconds>(diff + record);
+  milliseconds elapsedTime = chrono::duration_cast<milliseconds>(diff + record);
   return elapsedTime;
 }
 

@@ -2,8 +2,10 @@
 #include<chrono>
 #include<string>
 
-using namespace std::chrono;
 using namespace std;
+
+typedef chrono::duration<int, milli> milliseconds;
+
 class StopWatch
 {
 public:
@@ -43,7 +45,7 @@ private:
   //int型のn桁目の値を取り出す
   int ExtractDigit(int number, int digit);
 
-  milliseconds StopWatch::GetElapsedTimeDuration();
+  milliseconds GetElapsedTimeDuration();
 
   //計測した記録
   milliseconds record;
@@ -52,6 +54,6 @@ private:
   wchar_t record_time_display_format[100];
 
   //計測開始時間
-  time_point<system_clock> start_time;
+  chrono::time_point<chrono::system_clock> start_time;
 };
 
