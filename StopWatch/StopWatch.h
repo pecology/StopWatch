@@ -49,7 +49,7 @@ private:
   milliseconds record;
 
   //tchar‚ð•Ô‚·Žž‚Ì•¶Žš—ñ
-  wchar_t *record_time_display_format;
+  wchar_t record_time_display_format[100];
 
   //Œv‘ªŠJŽnŽžŠÔ
   time_point<system_clock> start_time;

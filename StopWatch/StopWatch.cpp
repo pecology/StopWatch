@@ -7,14 +7,11 @@ StopWatch::StopWatch()
 {
   start_time = time_point<system_clock>::min();
   record = record.zero();
-  //TODO Œã‚Å“KØ‚È”z—ñ”‚É‚µ‚ë
-  record_time_display_format = new wchar_t[100];
 }
 
 
 StopWatch::~StopWatch()
 {
-  delete[] record_time_display_format;
 }
 
 
