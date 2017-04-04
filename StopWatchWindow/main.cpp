@@ -32,7 +32,7 @@ DWORD WINAPI PaintElapsedTime()
 
     InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //—Ìˆæ–³Œø‰»
 
-    Sleep(76);
+    Sleep(87);
   }
   ExitThread(0);
 }
@@ -280,7 +280,6 @@ void OnReset()
   thread_end_flg = 1;
 
   stop_watch.Reset();
-  //display_time[0] = TEXT('0');
-  //display_time[1] = TEXT('\0');
+  display_time = TEXT("00:00:00:000");
   InvalidateRect(main_window_handle, NULL, TRUE);  //—Ìˆæ–³Œø‰»
 }
