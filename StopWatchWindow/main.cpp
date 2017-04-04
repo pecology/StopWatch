@@ -32,7 +32,7 @@ DWORD WINAPI PaintElapsedTime()
 
     InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //領域無効化
 
-    Sleep(90);
+    Sleep(76);
   }
   ExitThread(0);
 }
@@ -164,7 +164,8 @@ int WINAPI WinMain(
     return 0; //エラーチェック。atomがNULLだったらウィンドウクラス登録失敗なので、プログラム終了。
   }
 
-  main_window_handle = CreateWindow(
+  main_window_handle = CreateWindowEx(
+    WS_EX_COMPOSITED,                //ちらつき防止
     TEXT("ウィンドウクラス名です"),  //ウィンドウクラス名。lpsxClssNameの文字列を指定
     TEXT("ウィンドウだよ"),      //ウィンドウ名
     WS_OVERLAPPEDWINDOW | WS_VISIBLE, //ウィンドウのスタイル。枠とタイトルを持つウィンドウ
@@ -212,7 +213,7 @@ int WINAPI WinMain(
     NULL                    //メニュー(なし)
   );
 
-  // ボタンのウィンドウプロシージャを取得
+  // ボタンのウィンドウプロシージャを取得(3つのボタンはすべて共通のプロシージャなのでいっこだけでよい)
   default_button_window_proc_handle = (WNDPROC)GetWindowLong(start_button_handle, GWL_WNDPROC);
   
   // ボタンのウィンドウプロシージャを差し替える。
