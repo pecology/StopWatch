@@ -5,9 +5,8 @@ using namespace std;
 StopWatch::StopWatch()
 {
   start_time = chrono::time_point<chrono::system_clock>::min();
-  record = record.zero();
+  time = time.zero();
 }
-
 
 StopWatch::~StopWatch()
 {
@@ -22,41 +21,36 @@ void StopWatch::Start()
 
 void StopWatch::Stop()
 {
-  record = GetElapsedTimeDuration();
+  time = MeasureTime();
   this->is_started = 0;
 }
 
 void StopWatch::Reset()
 {
   is_started = 0;
-  record = record.zero();
+  time = time.zero();
   start_time = chrono::time_point<chrono::system_clock>::min();
 }
 
-int StopWatch::GetRecord()
+string StopWatch::GetTimeString()
 {
-  return this->record.count();
+  return to_string(GetTime());
 }
 
-string StopWatch::GetRecordString()
+int StopWatch::GetTime()
 {
-  return to_string(record.count());
+  MeasureTime();
+  return time.count();
 }
 
-int StopWatch::GetElapsedTime()
+wchar_t *StopWatch::GetTimeDisplay()
 {
-  milliseconds elapsedTime = GetElapsedTimeDuration();
-  return elapsedTime.count();
-}
-
-wchar_t *StopWatch::GetElapsedTimeDisplay()
-{
-  int elapsedTime = GetElapsedTime();
-  SetRecordTimeDisplayFormat(elapsedTime);
+  MeasureTime();
+  SetTimeDisplay(time.count());
   return record_time_display_format;
 }
 
-void StopWatch::SetRecordTimeDisplayFormat(int time)
+void StopWatch::SetTimeDisplay(int time)
 {
   //éûä‘ÇÃiåÖñ⁄Çiî‘ñ⁄Ç…ì¸ÇÍÇÈÅB
   int time_number[10];
@@ -79,17 +73,11 @@ int StopWatch::ExtractDigit(int number, int digit)
   return return_num;
 }
 
-
-milliseconds StopWatch::GetElapsedTimeDuration()
+milliseconds StopWatch::MeasureTime()
 {
   chrono::time_point<chrono::system_clock> now_time = chrono::system_clock::now();
   auto diff = now_time - start_time;
-  milliseconds elapsedTime = chrono::duration_cast<milliseconds>(diff + record);
-  return elapsedTime;
-}
-
-string StopWatch::GetElapsedTimeString()
-{
-  int elapsed_time = GetElapsedTime();
-  return to_string(elapsed_time);
+  start_time = now_time;
+  time = time + chrono::duration_cast<milliseconds>(diff);
+  return time;
 }

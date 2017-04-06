@@ -28,7 +28,7 @@ DWORD WINAPI PaintElapsedTime()
 {
   while (!thread_end_flg)
   {
-    display_time = (LPCWSTR)stop_watch.GetElapsedTimeDisplay();
+    display_time = (LPCWSTR)stop_watch.GetTimeDisplay();
 
     InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //—Ìˆæ–³Œø‰»
 
