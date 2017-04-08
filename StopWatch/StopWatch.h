@@ -12,7 +12,7 @@ public:
   StopWatch();
   ~StopWatch();
 
-  //計測を開始する
+  //計測を開始する。
   void Start();
 
   //計測を終了し、timeに計測結果を入れる。
@@ -44,10 +44,13 @@ private:
   //計測した記録
   milliseconds time;
 
+  //最後にストップした時の記録
+  milliseconds last_stop_time;
+
   //tcharを返す時の文字列
   wchar_t record_time_display_format[100];
 
   //計測開始時間
-  chrono::time_point<chrono::system_clock> start_time;
+  chrono::time_point<chrono::system_clock> start_time_point;
 };
 

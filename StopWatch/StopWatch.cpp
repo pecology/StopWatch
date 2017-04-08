@@ -4,8 +4,9 @@ using namespace std;
 
 StopWatch::StopWatch()
 {
-  start_time = chrono::time_point<chrono::system_clock>::min();
+  start_time_point = chrono::time_point<chrono::system_clock>::min();
   time = time.zero();
+  last_stop_time = last_stop_time.zero();
 }
 
 StopWatch::~StopWatch()
@@ -16,12 +17,13 @@ StopWatch::~StopWatch()
 void StopWatch::Start()
 {
   this->is_started = 1;
-  this->start_time = chrono::system_clock::now();
+  this->start_time_point = chrono::system_clock::now();
 }
 
 void StopWatch::Stop()
 {
   time = MeasureTime();
+  last_stop_time = time;
   this->is_started = 0;
 }
 
@@ -29,7 +31,8 @@ void StopWatch::Reset()
 {
   is_started = 0;
   time = time.zero();
-  start_time = chrono::time_point<chrono::system_clock>::min();
+  last_stop_time = last_stop_time.zero();
+  start_time_point = chrono::time_point<chrono::system_clock>::min();
 }
 
 string StopWatch::GetTimeString()
@@ -39,13 +42,13 @@ string StopWatch::GetTimeString()
 
 int StopWatch::GetTime()
 {
-  MeasureTime();
+  time = MeasureTime();
   return time.count();
 }
 
 wchar_t *StopWatch::GetTimeDisplay()
 {
-  MeasureTime();
+  time = MeasureTime();
   SetTimeDisplay(time.count());
   return record_time_display_format;
 }
@@ -75,9 +78,13 @@ int StopWatch::ExtractDigit(int number, int digit)
 
 milliseconds StopWatch::MeasureTime()
 {
-  chrono::time_point<chrono::system_clock> now_time = chrono::system_clock::now();
-  auto diff = now_time - start_time;
-  start_time = now_time;
-  time = time + chrono::duration_cast<milliseconds>(diff);
+  //現在時刻を取得
+  chrono::time_point<chrono::system_clock> now_time_point = chrono::system_clock::now();
+
+  //スタートしてから経過した時間を計算
+  auto time_after_start = now_time_point - start_time_point;
+
+  //以前に停止を押したときの記録 + スタートしてから経過した時間
+  milliseconds time = last_stop_time + chrono::duration_cast<milliseconds>(time_after_start);
   return time;
 }
