@@ -1,8 +1,6 @@
 #pragma once
 #include"Time.h"
 
-using namespace std;
-
 class StopWatch
 {
 public:
@@ -28,9 +26,9 @@ public:
 private:
 
   //最後にストップした時の記録
-  chrono::milliseconds last_stop_time;
+  std::chrono::milliseconds last_stop_time;
 
   //計測開始時間
-  chrono::time_point<chrono::system_clock> start_time_point;
+  std::chrono::time_point<std::chrono::system_clock> start_time_point;
 };
 

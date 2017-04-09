@@ -1,5 +1,6 @@
 #include "Time.h"
 
+using namespace std;
 using namespace std::chrono;
 
 Time::Time()
@@ -29,7 +30,7 @@ wchar_t * Time::ToWCharArray()
 
 int Time::ToInt()
 {
-  return milli_seconds.count();
+  return (int)(milli_seconds.count());
 }
 
 milliseconds Time::ToMilliseconds()

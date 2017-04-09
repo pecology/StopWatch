@@ -2,37 +2,35 @@
 #include<chrono>
 #include<string>
 
-using namespace std;
-
 class Time
 {
 public:
   Time();
-  Time(chrono::milliseconds time);
+  Time(std::chrono::milliseconds time);
   ~Time();
 
-  string ToString();
+  std::string ToString();
 
   wchar_t* ToWCharArray();
 
   int ToInt();
 
-  chrono::milliseconds ToMilliseconds();
+  std::chrono::milliseconds ToMilliseconds();
 
-  void SetTime(chrono::milliseconds time);
+  void SetTime(std::chrono::milliseconds time);
 
   void Clear();
 
 private:
-  chrono::milliseconds sum_time;
+  std::chrono::milliseconds sum_time;
 
-  chrono::milliseconds milli_seconds;
+  std::chrono::milliseconds milli_seconds;
 
-  chrono::seconds seconds;
+  std::chrono::seconds seconds;
 
-  chrono::minutes minutes;
+  std::chrono::minutes minutes;
 
-  chrono::hours hours;
+  std::chrono::hours hours;
 
   //tchar‚ð•Ô‚·Žž‚Ì•¶Žš—ñ
   wchar_t record_time_display_format[50];
