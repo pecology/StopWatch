@@ -7,7 +7,7 @@ Time::Time()
 
 Time::Time(milliseconds time)
 {
-  this->time = time;
+  this->milli_seconds = time;
 }
 
 
@@ -22,38 +22,49 @@ string Time::ToString()
 
 wchar_t * Time::ToWCharArray()
 {
-  SetTimeDisplay(ToInt());
+  SetTimeDisplay();
   return record_time_display_format;
 }
 
 int Time::ToInt()
 {
-  return time.count();
+  return milli_seconds.count();
 }
 
 milliseconds Time::ToMilliseconds()
 {
-  return time;
+  return milli_seconds;
 }
 
 void Time::SetTime(milliseconds time)
 {
-  this->time = time;
+  this->hours = chrono::duration_cast<chrono::hours>(time);
+  this->minutes = chrono::duration_cast<chrono::minutes>(time) - hours;
+  this->seconds = chrono::duration_cast<chrono::seconds>(time) - hours - minutes;
+  this->milli_seconds = time - hours - minutes - seconds;
 }
 
 void Time::Clear()
 {
-  time = time.zero();
+  hours = hours.zero();
+  minutes = minutes.zero();
+  seconds = seconds.zero();
+  milli_seconds = milli_seconds.zero();
 }
 
-void Time::SetTimeDisplay(int time)
+void Time::SetTimeDisplay()
 {
   //時間のi桁目をi番目に入れる。
   int time_number[10];
-  for (int i = 1; i < 10; i++)
-  {
-    time_number[i] = ExtractDigit(time, i);
-  }
+  time_number[1] = ExtractDigit(milli_seconds.count(), 1);
+  time_number[2] = ExtractDigit(milli_seconds.count(), 2);
+  time_number[3] = ExtractDigit(milli_seconds.count(), 3);
+  time_number[4] = ExtractDigit(seconds.count(), 1);
+  time_number[5] = ExtractDigit(seconds.count(), 2);
+  time_number[6] = ExtractDigit(minutes.count(), 1);
+  time_number[7] = ExtractDigit(minutes.count(), 2);
+  time_number[8] = ExtractDigit(hours.count(), 1);
+  time_number[9] = ExtractDigit(hours.count(), 2);
 
   //整形してセット
   swprintf_s(this->record_time_display_format, sizeof(wchar_t[13]),

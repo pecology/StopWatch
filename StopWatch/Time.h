@@ -26,13 +26,19 @@ public:
   void Clear();
 
 private:
-  milliseconds time;
+  milliseconds milli_seconds;
+
+  chrono::seconds seconds;
+
+  chrono::minutes minutes;
+
+  chrono::hours hours;
 
   //tchar‚ğ•Ô‚·‚Ì•¶š—ñ
   wchar_t record_time_display_format[50];
 
   //ŠÔ‚ğ“ü‚ê‚éB
-  void SetTimeDisplay(int time);
+  void SetTimeDisplay();
 
   //intŒ^‚ÌnŒ…–Ú‚Ì’l‚ğæ‚èo‚·
   int ExtractDigit(int number, int digit);
