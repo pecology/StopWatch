@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include <windows.h>
 #include "main.h"
 #include "StopWatch.h"
 #include "stdlib.h"
@@ -28,7 +28,7 @@ DWORD WINAPI PaintElapsedTime()
 {
   while (!thread_end_flg)
   {
-    display_time = (LPCWSTR)stop_watch.GetTimeDisplay();
+    display_time = (LPCWSTR)stop_watch.MeasureTime().ToWCharArray();
 
     InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //領域無効化
 
@@ -257,11 +257,11 @@ void OnStartStop()
 {
   if(stop_watch.is_started)
   { // ストップ
-    //スレッドを終了させる。
-    thread_end_flg = 1;
-
     //計測終了
     stop_watch.Stop();
+
+    //スレッドを終了させる。
+    thread_end_flg = 1;
   }
   else
   { // スタート
