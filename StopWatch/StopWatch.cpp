@@ -5,7 +5,6 @@ using namespace std;
 StopWatch::StopWatch()
 {
   start_time_point = chrono::time_point<chrono::system_clock>::min();
-  time = Time();
   time.Clear();
   last_stop_time = last_stop_time.zero();
 }
@@ -23,7 +22,7 @@ void StopWatch::Start()
 
 void StopWatch::Stop()
 {
-  time = MeasureTime();
+  MeasureTime();
   last_stop_time = time.ToMilliseconds();
   this->is_started = 0;
 }
@@ -36,7 +35,7 @@ void StopWatch::Reset()
   start_time_point = chrono::time_point<chrono::system_clock>::min();
 }
 
-Time StopWatch::MeasureTime()
+void StopWatch::MeasureTime()
 {
   //åªç›éûçèÇéÊìæ
   chrono::time_point<chrono::system_clock> now_time_point = chrono::system_clock::now();
@@ -48,6 +47,4 @@ Time StopWatch::MeasureTime()
   milliseconds time = last_stop_time +  chrono::duration_cast<milliseconds>(time_after_start);
 
   this->time.SetTime(time);
-
-  return this->time;
 }

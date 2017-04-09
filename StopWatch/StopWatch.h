@@ -21,11 +21,11 @@ public:
   //スタート状態：1, それ以外:0
   int is_started;
 
-  Time MeasureTime();
+  void MeasureTime();
 
-private:
   //計測した記録
   Time time;
+private:
 
   //最後にストップした時の記録
   milliseconds last_stop_time;

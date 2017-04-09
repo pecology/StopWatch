@@ -28,7 +28,8 @@ DWORD WINAPI PaintElapsedTime()
 {
   while (!thread_end_flg)
   {
-    display_time = (LPCWSTR)stop_watch.MeasureTime().ToWCharArray();
+    stop_watch.MeasureTime();
+    display_time = (LPCWSTR)stop_watch.time.ToWCharArray();
 
     InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //領域無効化
 
@@ -239,10 +240,6 @@ int WINAPI WinMain(
       //GetMessageがWM_QUITを受け取ると戻り値が0になるので、そのとき。
       //メイン関数に、wPARAMの値を戻して、プログラムを終了する。
       return msg.wParam;
-    }
-    if (msg.message == WM_KEYDOWN)
-    {
-      int a = 1;
     }
     //仮想キーコードを実際の文字に変換
     TranslateMessage(&msg);
