@@ -28,7 +28,7 @@ public:
 private:
 
   //最後にストップした時の記録
-  milliseconds last_stop_time;
+  chrono::milliseconds last_stop_time;
 
   //計測開始時間
   chrono::time_point<chrono::system_clock> start_time_point;

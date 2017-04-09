@@ -1,5 +1,6 @@
 #include "Time.h"
 
+using namespace std::chrono;
 
 Time::Time()
 {
@@ -33,11 +34,13 @@ int Time::ToInt()
 
 milliseconds Time::ToMilliseconds()
 {
-  return milli_seconds;
+  return sum_time;
 }
 
 void Time::SetTime(milliseconds time)
 {
+  this->sum_time = time;
+
   this->hours = chrono::duration_cast<chrono::hours>(time);
   this->minutes = chrono::duration_cast<chrono::minutes>(time) - hours;
   this->seconds = chrono::duration_cast<chrono::seconds>(time) - hours - minutes;
@@ -56,11 +59,11 @@ void Time::SetTimeDisplay()
 {
   //ŠÔ‚ÌiŒ…–Ú‚ği”Ô–Ú‚É“ü‚ê‚éB
   int time_number[10];
-  time_number[1] = ExtractDigit(milli_seconds.count(), 1);
-  time_number[2] = ExtractDigit(milli_seconds.count(), 2);
-  time_number[3] = ExtractDigit(milli_seconds.count(), 3);
-  time_number[4] = ExtractDigit(seconds.count(), 1);
-  time_number[5] = ExtractDigit(seconds.count(), 2);
+  time_number[1] = ExtractDigit((int)(milli_seconds.count()), 1);
+  time_number[2] = ExtractDigit((int)(milli_seconds.count()), 2);
+  time_number[3] = ExtractDigit((int)(milli_seconds.count()), 3);
+  time_number[4] = ExtractDigit((int)(seconds.count()), 1);
+  time_number[5] = ExtractDigit((int)(seconds.count()), 2);
   time_number[6] = ExtractDigit(minutes.count(), 1);
   time_number[7] = ExtractDigit(minutes.count(), 2);
   time_number[8] = ExtractDigit(hours.count(), 1);

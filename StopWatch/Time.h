@@ -4,13 +4,11 @@
 
 using namespace std;
 
-typedef chrono::duration<int, milli> milliseconds;
-
 class Time
 {
 public:
   Time();
-  Time(milliseconds time);
+  Time(chrono::milliseconds time);
   ~Time();
 
   string ToString();
@@ -19,14 +17,16 @@ public:
 
   int ToInt();
 
-  milliseconds ToMilliseconds();
+  chrono::milliseconds ToMilliseconds();
 
-  void SetTime(milliseconds time);
+  void SetTime(chrono::milliseconds time);
 
   void Clear();
 
 private:
-  milliseconds milli_seconds;
+  chrono::milliseconds sum_time;
+
+  chrono::milliseconds milli_seconds;
 
   chrono::seconds seconds;
 

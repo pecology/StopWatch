@@ -1,6 +1,7 @@
 #include "StopWatch.h"
 
 using namespace std;
+using namespace std::chrono;
 
 StopWatch::StopWatch()
 {
