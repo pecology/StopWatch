@@ -28,8 +28,7 @@ DWORD WINAPI PaintElapsedTime()
 {
   while (!thread_end_flg)
   {
-    stop_watch.MeasureTime();
-    display_time = (LPCWSTR)stop_watch.time.ToWCharArray();
+    display_time = (LPCWSTR)stop_watch.MeasureTime().ToWCharArray();
 
     InvalidateRect(main_window_handle, &elapsed_time_rect, TRUE);  //領域無効化
 
@@ -252,7 +251,7 @@ int WINAPI WinMain(
 
 void OnStartStop() 
 {
-  if(stop_watch.is_started)
+  if(stop_watch.is_measuring())
   { // ストップ
     //計測終了
     stop_watch.Stop();

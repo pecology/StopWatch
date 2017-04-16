@@ -9,7 +9,7 @@ Time::Time()
 
 Time::Time(milliseconds time)
 {
-  this->milli_seconds = time;
+  SetTime(time);
 }
 
 
@@ -22,10 +22,10 @@ string Time::ToString()
   return to_string(ToInt());
 }
 
-wchar_t * Time::ToWCharArray()
+wchar_t* Time::ToWCharArray()
 {
-  SetTimeDisplay();
-  return record_time_display_format;
+  SetWcharArray();
+  return wchar_array;
 }
 
 int Time::ToInt()
@@ -56,7 +56,7 @@ void Time::Clear()
   milli_seconds = milli_seconds.zero();
 }
 
-void Time::SetTimeDisplay()
+void Time::SetWcharArray()
 {
   //時間のi桁目をi番目に入れる。
   int time_number[10];
@@ -71,7 +71,7 @@ void Time::SetTimeDisplay()
   time_number[9] = ExtractDigit(hours.count(), 2);
 
   //整形してセット
-  swprintf_s(this->record_time_display_format, sizeof(wchar_t[13]),
+  swprintf_s(this->wchar_array, 20,
     L"%d%d:%d%d:%d%d:%d%d%d", time_number[9],
     time_number[8], time_number[7], time_number[6], time_number[5],
     time_number[4], time_number[3], time_number[2], time_number[1]);
